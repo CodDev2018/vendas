@@ -1,0 +1,67 @@
+<form class="form-inline" name="formItem">
+    <div class="form-group col-6">
+        <label for="inputProduto" class="sr-only">Produto</label>
+        <input type="text" id="inputProduto" class="form-control row col-12" placeholder="Buscar produto...">
+    </div>
+    <div class="form-group col-4">
+        <label for="inputQuantidade" class="sr-only">Quantidade</label>
+        <input type="number" id="inputQuantidade" class="form-control row col-12" placeholder="Quantidade...">
+    </div>
+    <button type="submit" class="btn btn-primary col-2" id="btnIncluir">Incluir</button>
+</form>
+<select id="listaProdutos" class="custom-select" style="display: none; margin-top: 20px" multiple size="3"></select>
+<script>
+    let vendaId = "<%= venda._id %>"
+    let inputProduto = document.getElementById('inputProduto')
+    let inputQuantidade = document.getElementById('inputQuantidade')
+    let listaProdutos = document.getElementById('listaProdutos')
+    let btnIncluir = document.getElementById('btnIncluir')
+    let formItem = document.forms['formItem']
+    btnIncluir.disabled = true
+
+    function buscarProdutos(event) {
+        let key = event.target.value
+        if (key.trim().length > 0) {
+            fetch(`/api/produtos?key=${key.trim()}`)
+                .then(response => {
+                    return response.json()
+                })
+                .then(produtos => {
+                    produtosHtml = ''
+                    produtos.forEach(produto => {
+                        produtosHtml += `<option value="${produto._id}">${produto.nome}</option>`
+                    })
+                    listaProdutos.style.display = 'block'
+                    listaProdutos.innerHTML = produtosHtml
+                })
+        } else {
+            listaProdutos.style.display = 'none'
+            listaProdutos.innerHTML = ''
+        }
+    }
+
+    function validarIncluir() {
+        btnIncluir.disabled = !(listaProdutos.value.trim().length > 0 && inputQuantidade.value > 0)
+    }
+
+    inputProduto.addEventListener('input', buscarProdutos)
+    inputProduto.addEventListener('input', validarIncluir)
+    inputQuantidade.addEventListener('input', validarIncluir)
+    listaProdutos.addEventListener('change', validarIncluir)
+    formItem.addEventListener('submit', (event) => {
+        event.preventDefault()
+        let data = JSON.stringify({
+            produtoId: listaProdutos.value,
+            qtde: inputQuantidade.value
+        })
+        fetch(`/api/vendas/${vendaId}/addItem`, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'Content-type': 'application/json'
+            }
+        }).then(() => {
+            window.location.reload()
+        })
+    })
+</script>

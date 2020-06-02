@@ -1,0 +1,12 @@
+<div class="row">
+    <div class="col-6">
+        <strong>Data</strong>
+        <br>
+        <h3><%= venda.data.getDate() %>/<%= venda.data.getMonth() %>/<%= venda.data.getFullYear() %></h3>
+    </div>
+    <div class="col-6">
+        <strong>Total</strong>
+        <br>
+        <h3>R$ <%= venda.total.toFixed(2) %></h3>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="col">
+        <% if (venda.itens.length > 0) { %>
+        <h2>Lista de produtos</h2>
+        <table class="table table-hover table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Vl. Unit.</th>
+                    <th scope="col">Qtde.</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% venda.itens.forEach(function(item) { %>
+                <tr>
+                    <td><%= item.produto.nome %></td>
+                    <td><%= item.vlUnit %></td>
+                    <td><%= item.qtde %></td>
+                    <td><%= (item.qtde * item.vlUnit).toFixed(2) %></td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" data-url="/api/vendas/<%=venda._id%>/itens/<%=item._id%>"
+                            onclick="excluirItem(event)">Excluir</button>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <% } else { %>
+        <p class="text-muted">Nenhum item incluido nesta venda</p>
+        <% } %>
+    </div>
+</div>
+<script>
+    function excluirItem(event) {
+        let url = event.target.dataset.url
+        if (confirm("Confirmar a exclusão do item?")) {
+            fetch(url, {
+                    method: "DELETE"
+                })
+                .then(
+                    () => window.location.reload()
+                )
+        }
+    }
+</script>
